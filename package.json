@@ -1,0 +1,39 @@
+{
+  "name": "gochat-back",
+  "version": "0.0.1",
+  "description": "BackEnd - GoChat application",
+  "main": "src/app.js",
+  "license": "MIT",
+  "scripts": {
+    "server": "nodemon --exec babel-node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RNunes13/gochat-back"
+  },
+  "author": {
+    "name": "Rodrigo Nunes",
+    "email": "nunesrodrigo13@outlook.com"
+  },
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "pg": "^7.11.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^5.8.7",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "nodemon": "^1.19.1"
+  },
+  "engines": {
+    "node": ">= 10.15.0"
+  }
+}
