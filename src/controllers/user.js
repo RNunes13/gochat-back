@@ -21,7 +21,7 @@ class Users {
       .then((userData) => res.status(201).send({
           success: true,
           message: 'User successfully created',
-          data: userData
+          data: Users.userWithoutPassword(userData)
         })
       )
       .catch(error => res.status(500).send({
@@ -30,10 +30,14 @@ class Users {
       }));
   }
 
-  static list(req, res) {
+  static list(_, res) {
     return User
-      .findAll()
-      .then(users => res.status(200).send(users));
+      .findAll({
+        order: [
+          ['id', 'ASC']
+        ]
+      })
+      .then(users => res.status(200).send(Users.userWithoutPassword(users)));
   }
 
   static listByPk(req, res) {
@@ -44,13 +48,17 @@ class Users {
           return res.status(400).send({ success: false, message: 'User Not Found' });
         }
 
-        return res.status(200).send(user);
+        return res.status(200).send(Users.userWithoutPassword(user));
       })
       .catch(error => res.status(400).send({ success: false, message: error.message }));
   }
 
   static update(req, res) {
-    const { name, username, email, password, disabled } = req.body;
+    const { name, username, email, disabled } = req.body;
+
+    if (!name && !username && !email && !disabled) {
+      return res.status(400).send({ success: false, message: 'Upgrading a user requires at least one data' });
+    }
 
     return User
       .findByPk(req.params.user_id)
@@ -63,14 +71,13 @@ class Users {
           name: name || user.name,
           username: username || user.username,
           email: email || user.email,
-          password: password || user.password,
           disabled: disabled || user.disabled,
         })
         .then((updatedUser) => {
           res.status(200).send({
             success: true,
             message: 'User updated successfully',
-            data: updatedUser
+            data: Users.userWithoutPassword(updatedUser)
           })
         })
         .catch(error => res.status(400).send({
@@ -82,6 +89,32 @@ class Users {
         success: false,
         message: error.message,
       }));
+  }
+
+  static async updatePassword(req, res) {
+    const { password, old_password } = req.body;
+
+    try {
+      const user = await User.findByPk(req.params.user_id);
+
+      if (!Auth.comparePassword(user.password, old_password)) throw 'Old password is incorrect';
+
+      const hashPassword = Auth.hashPassword(password);
+
+      const updatedUser = await user.update({
+        ...user,
+        password: hashPassword,
+      });
+
+      return res.status(200).send({
+        success: true,
+        message: 'Password updated successfully',
+        data: Users.userWithoutPassword(updatedUser)
+      });
+
+    } catch(error) {
+      return res.status(400).send({ success: false, message: error.message ? error.message : error });
+    }
   }
 
   static delete(req, res) {
@@ -107,6 +140,20 @@ class Users {
         success: false,
         message: error.message,
       }));
+  }
+
+  static userWithoutPassword(users) {
+    if (Array.isArray(users)) {
+      return users.map((user) => {
+        user.password = undefined;
+        return user;
+      });
+    } else if (typeof users === 'object') {
+      users.password = undefined;
+      return users;
+    } else {
+      return users;
+    }
   }
 }
 
