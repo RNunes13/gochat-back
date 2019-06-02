@@ -1,9 +1,11 @@
 
 import cors from 'cors';
 import http from 'http';
+import helmet from 'helmet';
 import express from 'express';
-import bodyParser from 'body-parser';
 import socket from 'socket.io';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 
 import routes from './routes';
 
@@ -20,8 +22,10 @@ app.use((req, res, next) => {
 });
 
 app.use(cors());
+app.use(helmet());
+app.use(cookieParser());
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 routes(app);
 
