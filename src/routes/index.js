@@ -1,7 +1,7 @@
 
 // Routes
 import users from './user';
-import Auth from '../controllers/auth';
+import auth from './auth';
 
 const BASE = '/api'
 
@@ -12,7 +12,7 @@ export default (app) => {
   }));
 
   // Login
-  app.post(`${BASE}/login`, Auth.login);
+  auth(app, BASE);
 
   // Users - [BASE]/users
   users(app, BASE);
