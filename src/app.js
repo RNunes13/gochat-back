@@ -1,6 +1,7 @@
 
 import cors from 'cors';
 import http from 'http';
+import helmet from 'helmet';
 import express from 'express';
 import socket from 'socket.io';
 import bodyParser from 'body-parser';
@@ -20,8 +21,9 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.use(cookieParser());
 app.use(cors());
+app.use(helmet());
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
