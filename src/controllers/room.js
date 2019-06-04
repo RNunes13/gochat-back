@@ -1,7 +1,7 @@
 
 import model from '../models';
 
-const { Room, User } = model;
+const { Room, User, Message } = model;
 
 class Rooms {
   static create(req, res) {
@@ -54,6 +54,10 @@ class Rooms {
             model: User,
             as: 'users',
             through: { attributes: [] }
+          },
+          {
+            model: Message,
+            as: 'messages'
           }
         ]
       })
@@ -63,7 +67,8 @@ class Rooms {
         }
 
         return room;
-      })));
+      })))
+      .catch(error => res.status(400).send({ success: false, message: error.message }));
   }
 
   static listByPk(req, res) {

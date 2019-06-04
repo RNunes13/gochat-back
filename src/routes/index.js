@@ -3,6 +3,7 @@
 import auth from './auth';
 import users from './user';
 import rooms from './room';
+import messages from './message';
 import roomUsers from './roomUser';
 
 const BASE = '/api'
@@ -24,4 +25,7 @@ export default (app) => {
 
   // RoomUsers - [BASE]/room-users
   roomUsers(app, BASE);
+
+  // Messages - [BASE]/messages
+  messages(app, BASE);
 };

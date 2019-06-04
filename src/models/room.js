@@ -12,6 +12,11 @@ export default (sequelize, DataTypes) => {
       as: 'users',
       foreignKey: 'roomId'
     });
+
+    Room.hasMany(models.Message, {
+      as: 'messages',
+      foreignKey: 'roomId'
+    });
   };
 
   return Room;
