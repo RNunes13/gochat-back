@@ -1,12 +1,14 @@
 
 // Routes
-import users from './user';
 import auth from './auth';
+import users from './user';
+import rooms from './room';
+import roomUsers from './roomUser';
 
 const BASE = '/api'
 
 export default (app) => {
-  app.get(BASE, (req, res) => res.status(200).send({
+  app.get(BASE, (_, res) => res.status(200).send({
     success: true,
     message: 'Welcome to the GoChat API!',
   }));
@@ -16,4 +18,10 @@ export default (app) => {
 
   // Users - [BASE]/users
   users(app, BASE);
+
+  // Rooms - [BASE]/rooms
+  rooms(app, BASE);
+
+  // RoomUsers - [BASE]/room-users
+  roomUsers(app, BASE);
 };

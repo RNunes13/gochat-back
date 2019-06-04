@@ -57,7 +57,11 @@ export default (sequelize, DataTypes) => {
   }, {});
 
   User.associate = (models) => {
-    // associations can be defined here
+    User.belongsToMany(models.Room, {
+      through: 'RoomUser',
+      as: 'rooms',
+      foreignKey: 'userId'
+    });
   };
 
   return User;

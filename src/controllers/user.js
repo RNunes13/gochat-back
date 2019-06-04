@@ -2,7 +2,7 @@
 import model from '../models';
 import Auth from './auth';
 
-const { User } = model;
+const { User, Room } = model;
 
 class Users {
   static create(req, res) {
@@ -35,6 +35,13 @@ class Users {
       .findAll({
         order: [
           ['id', 'ASC']
+        ],
+        include: [
+          {
+            model: Room,
+            as: 'rooms',
+            through: { attributes: [] }
+          }
         ]
       })
       .then(users => res.status(200).send(Users.userWithoutPassword(users)));
@@ -42,7 +49,15 @@ class Users {
 
   static listByPk(req, res) {
     return User
-      .findByPk(req.params.user_id)
+      .findByPk(req.params.user_id, {
+        include: [
+          {
+            model: Room,
+            as: 'rooms',
+            through: { attributes: [] }
+          }
+        ]
+      })
       .then(user => {
         if(!user) {
           return res.status(400).send({ success: false, message: 'User Not Found' });
@@ -113,6 +128,32 @@ class Users {
       });
 
     } catch(error) {
+      return res.status(400).send({ success: false, message: error.message ? error.message : error });
+    }
+  }
+
+  static async updateRooms(req, res) {
+    const { rooms } = req.body;
+
+    if (!rooms || rooms.length === 0 ) {
+      return res.status(400).send({ success: false, message: 'Enter rooms ID' });
+    }
+
+    try {    
+      const user = await User.findByPk(req.params.user_id);
+
+      if (!user) {
+        return res.status(400).send({ success: false, message: 'User Not Found' });
+      }
+
+      await user.setRooms(rooms);
+
+      return res.status(200).send({
+        success: true,
+        message: 'Updated user rooms',
+      });
+
+    } catch (error) {
       return res.status(400).send({ success: false, message: error.message ? error.message : error });
     }
   }
