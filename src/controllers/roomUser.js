@@ -1,5 +1,6 @@
 
 import model from '../models';
+import { CustomResponse } from '../utils';
 
 const { RoomUser, Room, User } = model;
 
@@ -14,7 +15,13 @@ class RoomUsers {
       });
 
       if (!roomsUser) {
-        return res.status(400).send({ success: false, message: 'RoomUsers Not Found' });
+        return res.status(400).send(CustomResponse({
+          success: false,
+          error: {
+            code: 'roomUsers/not-found',
+            message: 'RoomUsers Not Found'
+          }
+        }));
       }
 
       await roomsUser.destroy();
@@ -33,9 +40,12 @@ class RoomUsers {
         await room.destroy();
       }
 
-      return res.status(200).send({ success: true, message: 'User removed from room' });
+      return res.status(200).send(CustomResponse({
+        success: true,
+        message: 'User removed from room'
+      }));
     } catch (error) {
-      return res.status(400).send({ success: false, message: error.message ? error.message : error })
+      return res.status(400).send(CustomResponse({ success: false, error }))
     }
   }
 }
