@@ -51,7 +51,7 @@ class Users {
       .catch(error => Users.exceptionResponse(res, error));
   }
 
-  static listByPk(_, res) {
+  static listByPk(req, res) {
     return User
       .findByPk(req.params.user_id, {
         include: [
@@ -70,7 +70,7 @@ class Users {
           data: Users.userWithoutPassword(user),
         }));
       })
-      .catch(Users.exceptionResponse(res, error));
+      .catch(error => Users.exceptionResponse(res, error));
   }
 
   static async update(req, res) {
