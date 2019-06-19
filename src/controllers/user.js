@@ -17,9 +17,9 @@ class Users {
 
       const user = await User.create({
         name,
-        username,
         email,
         disabled,
+        username: username.toLocaleLowerCase(),
         password: hashPassword,
       });
 
@@ -27,6 +27,24 @@ class Users {
         success: true,
         message: 'User successfully created',
         data: Users.userWithoutPassword(user)
+      }));
+    } catch (error) {
+      return Users.exceptionResponse(res, error);
+    }
+  }
+
+  static async checkUsername(req, res) {
+    const { username } = req.body;
+
+    try {
+      if (!username) throw { code: 'user/bad-body', message: 'Username is required' };
+
+      const user = await User.findOne({ where: { username: username.toLocaleLowerCase() } });
+
+  		return res.status(200).send(CustomResponse({
+        success: true,
+        message: 'Username is available',
+        data: !user,
       }));
     } catch (error) {
       return Users.exceptionResponse(res, error);

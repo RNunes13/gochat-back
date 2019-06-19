@@ -21,7 +21,7 @@ class Auth {
     }));
 
     return User.findOne({
-      where: { username }
+      where: { username: username.toLocaleLowerCase() }
     })
     .then(user => {
       if(!user) {
