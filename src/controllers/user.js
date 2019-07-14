@@ -109,12 +109,17 @@ class Users {
       
       const contacts = await Promise.all(contactPromises);
 
-      const contactsInfo = contacts.map(contact => ({
-        id: contact.id,
-        name: contact.name,
-        username: contact.username,
-        image_url: contact.image_url,
-      }));
+      const contactsInfo = contacts.map((contact) => {
+        const status = user.contacts.filter(c => c.contactId === contact.id)[0].status;
+        
+        return {
+          id: contact.id,
+          name: contact.name,
+          username: contact.username,
+          image_url: contact.image_url,
+          status,
+        };
+      });
 
       return res.status(200).send(CustomResponse({
         success: true,

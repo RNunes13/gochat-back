@@ -15,6 +15,9 @@ export default (sequelize, DataTypes) => {
       primaryKey: true,
       type: DataTypes.INTEGER
     },
+    status: {
+      type: DataTypes.STRING,
+    }
   }, {});
 
   return Contact;
