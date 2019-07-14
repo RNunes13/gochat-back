@@ -1,9 +1,10 @@
 
 import model from '../models';
 import Auth from './auth';
+import Gravatar from 'gravatar';
 import { CustomResponse } from '../utils';
 
-const { User, Room } = model;
+const { User, Room, Contact } = model;
 
 class Users {
   static async create(req, res) {
@@ -14,13 +15,15 @@ class Users {
         throw { code: 'user/bad-body', message: 'Password is required' };
 
       const hashPassword = Auth.hashPassword(password);
+      const imageUrl = Gravatar.url(email, { s: '300', r: 'pg', d: 'retro' });
 
       const user = await User.create({
         name,
         email,
         disabled,
-        username: username.toLocaleLowerCase(),
+        image_url: imageUrl,
         password: hashPassword,
+        username: username.toLocaleLowerCase(),
       });
 
       return res.status(201).send(CustomResponse({
@@ -56,13 +59,6 @@ class Users {
       .findAll({
         order: [
           ['id', 'ASC']
-        ],
-        include: [
-          {
-            model: Room,
-            as: 'rooms',
-            through: { attributes: [] }
-          }
         ]
       })
       .then(users => res.status(200).send(Users.userWithoutPassword(users)))
@@ -77,6 +73,10 @@ class Users {
             model: Room,
             as: 'rooms',
             through: { attributes: [] }
+          },
+          {
+            model: Contact,
+            as: 'contacts'
           }
         ]
       })
@@ -89,6 +89,41 @@ class Users {
         }));
       })
       .catch(error => Users.exceptionResponse(res, error));
+  }
+
+  static async getContactsInfo(req, res) {
+    try {
+      const user = await User.findByPk(
+        req.params.user_id,
+        {
+          include: [{
+            model: Contact,
+            as: 'contacts',
+          }]
+        }
+      );
+      
+      if (!user) return Users.userNotFoundResponse(res);
+      
+      const contactPromises = user.contacts.map(contact => User.findByPk(contact.contactId));
+      
+      const contacts = await Promise.all(contactPromises);
+
+      const contactsInfo = contacts.map(contact => ({
+        id: contact.id,
+        name: contact.name,
+        username: contact.username,
+        image_url: contact.image_url,
+      }));
+
+      return res.status(200).send(CustomResponse({
+        success: true,
+        message: 'Contacts successfully obtained',
+        data: contactsInfo
+      }));
+    } catch (error) {
+      return Users.exceptionResponse(res, error);
+    }
   }
 
   static async update(req, res) {

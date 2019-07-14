@@ -5,7 +5,8 @@
   "main": "src/app.js",
   "license": "MIT",
   "scripts": {
-    "server": "nodemon --exec babel-node src/app.js"
+    "server": "nodemon --exec babel-node src/app.js",
+    "connect:dev": "sudo -u postgres psql gochat_development"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
+    "gravatar": "^1.8.0",
     "helmet": "^3.18.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^7.11.0",

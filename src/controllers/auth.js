@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import model from '../models';
 import { CustomResponse } from '../utils';
 
-const { User } = model;
+const { User, Room, Contact } = model;
 const HEADER_TOKEN = 'x-access-token';
 const MAX_AGE_COOKIE = 604800000; // In milliseconds -> 7d
 
@@ -69,7 +69,22 @@ class Auth {
 
     try {
       const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findOne({ where: { id: decoded.userId } });
+      const user = await User.findOne({
+        where: {
+          id: decoded.userId
+        },
+        include: [
+          {
+            model: Room,
+            as: 'rooms',
+            through: { attributes: [] }
+          },
+          {
+            model: Contact,
+            as: 'contacts'
+          }
+        ]
+      });
 
       if (!user) {
         return res.status(200).send(CustomResponse({

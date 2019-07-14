@@ -53,7 +53,10 @@ export default (sequelize, DataTypes) => {
     disabled: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
-    }
+    },
+    image_url: {
+      type: DataTypes.STRING,
+    },
   }, {});
 
   User.associate = (models) => {
@@ -61,6 +64,11 @@ export default (sequelize, DataTypes) => {
       through: 'RoomUser',
       as: 'rooms',
       foreignKey: 'userId'
+    });
+
+    User.hasMany(models.Contact, {
+      as: 'contacts',
+      foreignKey: 'ownerId'
     });
   };
 
