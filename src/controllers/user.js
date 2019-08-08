@@ -46,7 +46,7 @@ class Users {
 
   		return res.status(200).send(CustomResponse({
         success: true,
-        message: 'Username is available',
+        message: !user ? 'Username is available' : 'Username is unavailable',
         data: !user,
       }));
     } catch (error) {
